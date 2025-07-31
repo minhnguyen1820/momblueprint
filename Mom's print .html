@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mom's Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@0.378.0/dist/umd/lucide.min.js"></script>
+    <style>
+        :root {
+            /* Color Palette */
+            --blue-main: #3b82f6;
+            --deep-blue: #1e293b;
+            --gold-start: #fde047;
+            --gold-end: #f59e0b;
+            --gold-text: #ca8a04;
+            --gold-gradient: linear-gradient(135deg, var(--gold-start), var(--gold-end));
+            
+            /* Light Mode */
+            --bg-primary-light: #f1f5f9;
+            --text-primary-light: #0f172a;
+            --border-light: #e2e8f0;
+            --card-bg-light: #ffffff;
+            --tag-endo-bg-light: var(--gold-end);
+            --tag-endo-text-light: white;
+            --tag-mental-bg-light: var(--gold-end);
+            --tag-mental-text-light: var(--deep-blue);
+
+            /* Dark Mode */
+            --bg-primary-dark: #0f172a;
+            --text-primary-dark: #f1f5f9;
+            --border-dark: rgba(148, 163, 184, 0.3);
+            --card-bg-dark: rgba(30, 41, 59, 0.7);
+            --tag-endo-bg-dark: var(--gold-gradient);
+            --tag-endo-text-dark: var(--deep-blue);
+            --tag-mental-bg-dark: var(--gold-end);
+            --tag-mental-text-dark: white;
+        }
+
+        html {
+            min-height: 100vh;
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+        .light body { background-color: var(--bg-primary-light); color: var(--text-primary-light); }
+        .dark body { 
+            background-image: linear-gradient(to bottom, #0f172a, #020617, #000000);
+            background-attachment: fixed;
+            color: var(--text-primary-dark); 
+        }
+
+        .glass-card {
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .light .glass-card { 
+            background-color: var(--card-bg-light); 
+            border: 1px solid var(--border-light); 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
+        }
+        .dark .glass-card { 
+            background-color: var(--card-bg-dark); 
+            border: 1px solid var(--border-dark);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .main-tab, .sub-tab, .lang-tab, .month-tab { transition: all 0.2s ease-in-out; }
+        .main-tab.active { background-color: var(--blue-main); color: white; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3); }
+        .sub-tab.active { background-image: var(--gold-gradient); color: var(--deep-blue); font-weight: 700; }
+        .lang-tab.active { background-image: var(--gold-gradient); color: var(--deep-blue); }
+        .month-tab.active { background-color: var(--blue-main); color: white; }
+
+        #content-area { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+        .keyword-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            min-height: 120px;
+            position: relative;
+        }
+        .keyword-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2); z-index: 20; }
+        
+        .card-content { font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; }
+        .card-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        
+        .priority-tag { padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+        
+        .light .priority-tag-Endocrinology { 
+            background: var(--tag-endo-bg-light); 
+            color: var(--tag-endo-text-light); 
+        }
+        .dark .priority-tag-Endocrinology { 
+            background: var(--tag-endo-bg-dark); 
+            color: var(--tag-endo-text-dark); 
+        }
+
+        .light .priority-tag-Mental-health-&-sleepiness { 
+            background-color: var(--tag-mental-bg-light); 
+            color: var(--tag-mental-text-light); 
+        }
+        .dark .priority-tag-Mental-health-&-sleepiness { 
+            background-color: var(--tag-mental-bg-dark); 
+            color: var(--tag-mental-text-dark); 
+        }
+
+        .classification-header {
+            font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; grid-column: 1 / -1;
+        }
+        .light .classification-header { color: var(--blue-main); border-bottom: 2px solid var(--blue-main); }
+        .dark .classification-header { color: var(--gold-text); border-bottom: 2px solid var(--gold-text); }
+
+        #modal-overlay { transition: opacity 0.3s; }
+        #modal-content { transition: transform 0.3s, opacity 0.3s; }
+        
+        .modal-section h4 { font-weight: 700; padding-bottom: 0.5rem; margin-bottom: 0.75rem; }
+        .light .modal-section h4 { color: var(--blue-main); border-bottom: 1px solid var(--border-light); }
+        .dark .modal-section h4 { color: var(--gold-text); border-bottom: 1px solid var(--border-dark); }
+        
+        .timeline-label-container { position: relative; display: inline-block; }
+        .timeline-label { font-size: 0.7rem; opacity: 0.7; text-align: right; line-height: 1.2; }
+        .timeline-tooltip-text {
+            visibility: hidden; width: 220px; background-color: #555; color: #fff; text-align: left;
+            border-radius: 6px; padding: 8px; position: absolute; z-index: 50; bottom: 125%;
+            left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s;
+            font-size: 0.75rem; line-height: 1.4; pointer-events: none;
+        }
+        .timeline-tooltip-text::after {
+            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+            border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;
+        }
+        .timeline-label-container:hover .timeline-tooltip-text { visibility: visible; opacity: 1; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-6">
+            <h1 id="main-title" class="text-5xl md:text-6xl font-bold mb-2">Mom's Blueprint</h1>
+            <p id="main-subtitle" class="text-lg text-gray-400">A scientific guide to a healthy pregnancy and beyond.</p>
+        </header>
+
+        <nav class="flex justify-center gap-2 md:gap-4 mb-4 glass-card p-2 rounded-xl">
+            <button class="main-tab flex-1 md:flex-none md:px-8 py-3 rounded-lg font-semibold" data-tab="all-stages" data-lang-key="allStages">All Stages</button>
+            <button class="main-tab flex-1 md:flex-none md:px-8 py-3 rounded-lg font-semibold" data-tab="pre-pregnancy" data-lang-key="prePregnancy">Pre-Pregnancy</button>
+            <button class="main-tab flex-1 md:flex-none md:px-8 py-3 rounded-lg font-semibold" data-tab="pregnancy" data-lang-key="pregnancy">Pregnancy</button>
+            <button class="main-tab flex-1 md:flex-none md:px-8 py-3 rounded-lg font-semibold" data-tab="after-birth" data-lang-key="afterBirth">After Birth</button>
+        </nav>
+
+        <div id="stage-description-container" class="text-center text-gray-400 mb-4 text-sm italic min-h-[20px]"></div>
+        
+        <nav id="pregnancy-sub-nav" class="flex justify-center gap-2 mb-4 glass-card p-2 rounded-xl">
+            <button class="sub-tab flex-1 py-2 px-4 rounded-md text-sm" data-subtab="trimester1" data-lang-key="trimester1">1st Trimester</button>
+            <button class="sub-tab flex-1 py-2 px-4 rounded-md text-sm" data-subtab="trimester2" data-lang-key="trimester2">2nd Trimester</button>
+            <button class="sub-tab flex-1 py-2 px-4 rounded-md text-sm" data-subtab="trimester3" data-lang-key="trimester3">3rd Trimester</button>
+        </nav>
+
+        <div id="month-nav-container" class="mb-8 flex justify-center">
+            <div id="month-nav" class="glass-card p-2 rounded-xl flex gap-1 flex-wrap justify-center"></div>
+        </div>
+        
+        <main id="content-area"></main>
+        
+        <footer class="mt-12 pt-6 border-t text-xs">
+            <div id="name-description" class="text-center text-gray-400 mb-6 max-w-lg mx-auto"></div>
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div id="legend-container" class="flex flex-wrap justify-center sm:justify-start items-center gap-x-4 gap-y-2"></div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center p-1 rounded-full glass-card">
+                        <button class="lang-tab px-3 py-1 rounded-full text-xs font-bold" data-lang="en">EN</button>
+                        <button class="lang-tab px-3 py-1 rounded-full text-xs font-bold" data-lang="vn">VN</button>
+                    </div>
+                    <label for="theme-switch" class="flex items-center cursor-pointer">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                        <div class="relative mx-2">
+                            <input type="checkbox" id="theme-switch" class="sr-only peer">
+                            <div class="block bg-gray-600 w-10 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full peer-checked:bg-blue-main"></div>
+                        </div>
+                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    </label>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 z-40 opacity-0 pointer-events-none"></div>
+    <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div id="modal-content" class="w-full max-w-2xl glass-card rounded-2xl shadow-lg p-6 transform scale-95 opacity-0">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h3 id="modal-title" class="text-2xl font-bold"></h3>
+                    <p id="modal-timeline" class="text-sm text-gray-400"></p>
+                </div>
+                <button id="modal-close" class="p-2 rounded-full hover:bg-gray-700/50">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div id="modal-body" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- FULL RAW DATA ---
+        const fullJourneyData = {
+            "pre-pregnancy": [
+                { en: { content: "General tests", description: "Includes: Blood Type, Blood Count, Blood Glucose, HbA1C, Liver Function, Kidney Function, Blood Lipid Profile, Ionogram, Calcium, Vitamin D, Albumin, Urinalysis, Echocardiogram, ECG, General Abdominal Ultrasound, Central Chest X-ray." }, vn: { content: "Xét nghiệm Tổng quát", description: "Bao gồm: Nhóm máu, Công thức máu, Đường huyết, HbA1C, Chức năng gan, Chức năng thận, Hồ sơ lipid máu, Ionogram, Canxi, Vitamin D, Albumin, Phân tích nước tiểu, Siêu âm tim, ECG, Siêu âm bụng tổng quát, X-quang ngực trung tâm." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [1,2,3] },
+                { en: { content: "Dental check-up & treatment", description: "Check for: Gingivitis, bleeding gums, Chronic periodontitis, Tooth decay, pulpitis, Impacted or misaligned wisdom teeth, Loose teeth, tooth loss." }, vn: { content: "Khám & Điều trị Răng miệng", description: "Kiểm tra: Viêm nướu, chảy máu chân răng, Viêm nha chu mãn tính, Sâu răng, viêm tủy, Răng khôn mọc lệch hoặc lệch lạc, Răng lung lay, mất răng." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [1,2,3] },
+                { en: { content: "Parasite testing & deworming", description: "Tests for: Roundworms, hookworms, whipworms, tapeworms, Toxoplasma gondii, Dog tapeworm (Toxocara canis), Liver flukes, Amoeba, Giardia." }, vn: { content: "Xét nghiệm & Tẩy giun sán", description: "Xét nghiệm: Giun đũa, giun móc, giun tóc, sán dây, Toxoplasma gondii, Sán dây chó (Toxocara canis), Sán lá gan, Amip, Giardia." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [1,2,3] },
+                { en: { content: "Vaccination", description: "Recommended vaccines: Diphtheria – Pertussis – Tetanus (Tdap), Measles – Mumps – Rubella, Chickenpox (Varicella), Hepatitis B (HBV), Human Papillomavirus (HPV), Influenza (Flu)." }, vn: { content: "Tiêm chủng", description: "Các vắc-xin được khuyến nghị: Bạch hầu – Ho gà – Uốn ván (Tdap), Sởi – Quai bị – Rubella, Thủy đậu (Varicella), Viêm gan B (HBV), Human Papillomavirus (HPV), Cúm (Flu)." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [1,2,3] }
+            ],
+            "trimester1": [
+                { en: { content: "Vaginal Discharge", description: "Increased vaginal discharge: clear or whitish, stretchy, odorless or with a mild scent.", cause: "Hormonal changes increasing blood flow to the pelvic area." }, vn: { content: "Tăng tiết Dịch Âm đạo", description: "Dịch âm đạo tăng tiết: trong hoặc trắng, dai, không mùi hoặc có mùi nhẹ.", cause: "Thay đổi nội tiết tố làm tăng lưu lượng máu đến vùng chậu." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [1,2,3] },
+                { en: { content: "Risk of Miscarriage", description: "10–20% of clinically recognized pregnancies end in miscarriage, most often in the first trimester.", cause: "Often due to chromosomal abnormalities in the fetus." }, vn: { content: "Nguy cơ Sảy thai", description: "10–20% các trường hợp mang thai được công nhận trên lâm sàng kết thúc bằng sảy thai, thường xuyên nhất là trong tam cá nguyệt đầu tiên.", cause: "Thường do bất thường nhiễm sắc thể của thai nhi." }, classification: "Symptom/Sign", priority: null, months: [1,2,3] },
+                { en: { content: "Fatigue & Sleepiness", description: "Occurs in approximately 60–90% of pregnancies, especially common during the first 12 weeks.", cause: "Increased progesterone relaxes muscles, causing drowsiness. Increased blood volume & metabolism also add to the workload of the heart, lungs, & kidneys." }, vn: { content: "Mệt mỏi & Buồn ngủ", description: "Xảy ra ở khoảng 60–90% các trường hợp mang thai, đặc biệt phổ biến trong 12 tuần đầu.", cause: "Progesterone tăng làm giãn cơ, gây buồn ngủ. Lượng máu & sự trao đổi chất tăng lên cũng làm tăng khối lượng công việc cho tim, phổi & thận." }, classification: "Symptom/Sign", priority: "Mental health & sleepiness", months: [1,2,3] },
+                { en: { content: "Breast tenderness & engorgement", description: "A feeling of fullness, swelling, tightness, & sensitivity in both breasts caused by hormonal changes. May be accompanied by: Darkening of the nipples, Enlargement of the areola, Prominent breast veins, Appearance of Montgomery’s tubercles.", cause: "Hormonal changes" }, vn: { content: "Căng tức & Cương vú", description: "Cảm giác đầy, sưng, căng & nhạy cảm ở cả hai vú do thay đổi nội tiết tố. Có thể kèm theo: Sẫm màu núm vú, Mở rộng quầng vú, Nổi rõ các tĩnh mạch vú, Xuất hiện các hạt Montgomery." }, classification: "Symptom/Sign", priority: null, months: [1,2,3] },
+                { en: { content: "Vaginal bleeding", description: "Normal vaginal bleeding (Implantation bleeding): Light pink or brown spotting, very small amount (a few drops), occurs around 6–12 days after ovulation, no abdominal pain or only mild discomfort, Usually short-lived (1–2 days). Abnormal / Concerning Bleeding: Bright red/ dark red blood, possibly heavy or prolonged, may be accompanied by lower abdominal pain, cramping, fatigue.", cause: "Normal bleeding is due to implantation of the embryo. Abnormal bleeding can have various causes needing medical evaluation." }, vn: { content: "Chảy máu Âm đạo", description: "Chảy máu âm đạo bình thường (Máu báo thai): Đốm màu hồng nhạt hoặc nâu, lượng rất ít (vài giọt), xảy ra khoảng 6–12 ngày sau khi rụng trứng, không đau bụng hoặc chỉ khó chịu nhẹ, Thường chỉ kéo dài 1–2 ngày. Chảy máu bất thường / Đáng lo ngại: Máu đỏ tươi/đỏ sẫm, có thể nhiều hoặc kéo dài, có thể kèm theo đau bụng dưới, chuột rút, mệt mỏi.", cause: "Chảy máu bình thường là do phôi làm tổ. Chảy máu bất thường có thể do nhiều nguyên nhân khác nhau cần được đánh giá y tế." }, classification: "Symptom/Sign", priority: null, months: [1,2,3] },
+                { en: { content: "Urticaria & Allergic reactions", description: "A skin reaction characterized by sudden onset of raised, red, itchy welts, often with swelling (angioedema).", cause: "Changes in the immune system during pregnancy can sometimes trigger or worsen allergies." }, vn: { content: "Mề đay & Phản ứng Dị ứng", description: "Một phản ứng da đặc trưng bởi sự khởi phát đột ngột của các nốt sần, đỏ, ngứa, thường kèm theo sưng (phù mạch).", cause: "Những thay đổi trong hệ miễn dịch khi mang thai đôi khi có thể gây ra hoặc làm trầm trọng thêm tình trạng dị ứng." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [1,2,3] },
+                { en: { content: "Taste changing", description: "Affects approximately 50–70% of pregnant women, especially during the first trimester. Metallic taste in the mouth, especially after eating or drinking water.", cause: "Hormonal fluctuations, particularly estrogen, can affect taste buds." }, vn: { content: "Thay đổi Vị giác", description: "Ảnh hưởng đến khoảng 50–70% phụ nữ mang thai, đặc biệt là trong tam cá nguyệt đầu tiên. Vị kim loại trong miệng, đặc biệt là sau khi ăn hoặc uống nước.", cause: "Sự biến động của nội tiết tố, đặc biệt là estrogen, có thể ảnh hưởng đến các nụ vị giác." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [1,2,3] },
+                { en: { content: "Nausea & Vomiting", description: "Affects approximately 70–80% of pregnant women, typically from week 4 to weeks 12–14 of gestation; poor appetite, fatigue, morning vomiting.", cause: "Rapidly rising levels of hCG hormone." }, vn: { content: "Buồn nôn & Nôn", description: "Ảnh hưởng đến khoảng 70–80% phụ nữ mang thai, thường từ tuần thứ 4 đến tuần 12–14 của thai kỳ; chán ăn, mệt mỏi, nôn vào buổi sáng.", cause: "Nồng độ hormone hCG tăng nhanh." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [1,2,3] },
+                { en: { content: "Headache/Dizziness", description: "Occurs in ~39% of pregnant women.", cause: "Hormonal changes & increased blood volume." }, vn: { content: "Đau đầu / Chóng mặt", description: "Xảy ra ở ~39% phụ nữ mang thai.", cause: "Thay đổi nội tiết tố & tăng thể tích máu." }, classification: "Symptom/Sign", priority: null, months: [1] },
+                { en: { content: "First prenatal ultrasound", description: "To confirm pregnancy diagnosis.", cause: "Standard prenatal care." }, vn: { content: "Siêu âm thai Lần đầu", description: "Để xác nhận chẩn đoán mang thai.", cause: "Chăm sóc tiền sản tiêu chuẩn." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [2] },
+                { en: { content: "Prenatal Ultrasound screening", description: "To screen for fetal abnormalities.", cause: "Standard prenatal care." }, vn: { content: "Siêu âm Sàng lọc Trước sinh", description: "Để sàng lọc các bất thường của thai nhi.", cause: "Chăm sóc tiền sản tiêu chuẩn." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [3] },
+                { en: { content: "Stress & anxiety", description: "Common emotional changes during pregnancy.", cause: "Hormonal shifts & significant life changes." }, vn: { content: "Căng thẳng & Lo âu", description: "Những thay đổi cảm xúc phổ biến trong thai kỳ.", cause: "Thay đổi nội tiết tố & những thay đổi lớn trong cuộc sống." }, classification: "Symptom/Sign", priority: "Mental health & sleepiness", months: [1] },
+                { en: { content: "Pregnancy test", description: "Confirms pregnancy.", cause: "To verify pregnancy status." }, vn: { content: "Thử thai", description: "Xác nhận mang thai.", cause: "Để xác minh tình trạng mang thai." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [2] },
+                { en: { content: "Antenatal care (Routine Prenatal Check-ups)", description: "Includes tests for blood type, Rh factor, anemia, & infectious diseases.", cause: "To assess maternal health & risks." }, vn: { content: "Chăm sóc Trước sinh (Khám thai Định kỳ)", description: "Bao gồm các xét nghiệm nhóm máu, yếu tố Rh, thiếu máu & các bệnh truyền nhiễm.", cause: "Để đánh giá sức khỏe của mẹ & các nguy cơ." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [3] }
+            ],
+            "trimester2": [
+                { en: { content: "Dyspnea", description: "Shortness of breath is a very common symptom during pregnancy, affecting 60–70% of pregnant women, especially from the second trimester onward.", cause: "The growing uterus puts pressure on the diaphragm. Hormonal changes also affect the lungs & breathing." }, vn: { content: "Khó thở", description: "Khó thở là một triệu chứng rất phổ biến trong thai kỳ, ảnh hưởng đến 60–70% phụ nữ mang thai, đặc biệt là từ tam cá nguyệt thứ hai trở đi.", cause: "Tử cung phát triển gây áp lực lên cơ hoành. Thay đổi nội tiết tố cũng ảnh hưởng đến phổi & hô hấp." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Fatigue & Sleepiness", description: "Can persist or return during the second trimester.", cause: "Increased blood volume & metabolism continue to add workload to the body." }, vn: { content: "Mệt mỏi & Buồn ngủ", description: "Có thể kéo dài hoặc quay trở lại trong tam cá nguyệt thứ hai.", cause: "Tăng thể tích máu & trao đổi chất tiếp tục làm tăng gánh nặng cho cơ thể." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Poor sleep, insomnia", description: "Insomnia & poor sleep during pregnancy are common issues that significantly affect the physical & mental health of pregnant women.", cause: "Discomfort from the growing belly, leg cramps, & hormonal changes." }, vn: { content: "Ngủ kém, Mất ngủ", description: "Mất ngủ & ngủ kém trong thai kỳ là những vấn đề phổ biến ảnh hưởng đáng kể đến sức khỏe thể chất & tinh thần của phụ nữ mang thai.", cause: "Khó chịu do bụng bầu lớn dần, chuột rút ở chân & thay đổi nội tiết tố." }, classification: "Symptom/Sign", priority: "Mental health & sleepiness", months: [4,5,6] },
+                { en: { content: "Leg varicose veins", description: "Enlarged, twisted, & swollen veins in the legs, often causing a heavy feeling in the legs, aching, or fatigue, swelling (especially in the afternoon or evening), visible blue or purple veins under the skin (spider veins or rope-like appearance).", cause: "Increased progesterone dilates vein walls & reduces vascular tone, leading to blood pooling. The enlarging uterus also puts pressure on pelvic veins." }, vn: { content: "Giãn Tĩnh mạch Chân", description: "Các tĩnh mạch ở chân bị giãn, xoắn & sưng, thường gây cảm giác nặng ở chân, đau nhức hoặc mệt mỏi, sưng (đặc biệt vào buổi chiều hoặc tối), các tĩnh mạch màu xanh hoặc tím có thể nhìn thấy dưới da (tĩnh mạch mạng nhện hoặc dạng dây thừng).", cause: "Progesterone tăng làm giãn thành tĩnh mạch & giảm trương lực mạch máu, dẫn đến ứ máu. Tử cung lớn dần cũng gây áp lực lên các tĩnh mạch vùng chậu." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Back pain", description: "Affects 50-70% of pregnant women.", cause: "Shift in center of gravity, weight gain, & hormonal changes relaxing ligaments." }, vn: { content: "Đau lưng", description: "Ảnh hưởng 50-70% phụ nữ mang thai.", cause: "Thay đổi trọng tâm cơ thể, tăng cân & thay đổi nội tiết tố làm giãn các dây chằng." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Pelvic pain", description: "Symptoms: Pain while walking, turning in bed, climbing stairs, or rolling over. Worsens with lifting, prolonged standing, or repetitive movements. Typically does not radiate down the legs like sciatica.", cause: "The hormone relaxin loosens the ligaments in the pelvis to prepare for childbirth." }, vn: { content: "Đau Vùng chậu", description: "Triệu chứng: Đau khi đi bộ, trở mình trên giường, leo cầu thang hoặc lăn qua. Tình trạng nặng hơn khi nâng vật nặng, đứng lâu hoặc các động tác lặp đi lặp lại. Thường không lan xuống chân như đau thần kinh tọa.", cause: "Hormone relaxin làm lỏng các dây chằng ở xương chậu để chuẩn bị cho việc sinh nở." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Mild leg swelling", description: "Common, especially in the afternoon or evening.", cause: "Fluid retention & pressure from the uterus on veins." }, vn: { content: "Phù chân Nhẹ", description: "Phổ biến, đặc biệt là vào buổi chiều hoặc tối.", cause: "Giữ nước & áp lực từ tử cung lên các tĩnh mạch." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Gastroesophageal reflux disease (GERD)", description: "A burning sensation in the chest (heartburn), rising from the stomach to the throat. Affects 30–80% of pregnant women.", cause: "Hormonal changes relax the valve between the stomach & esophagus." }, vn: { content: "Bệnh trào ngược Dạ dày Thực quản (GERD)", description: "Cảm giác nóng rát ở ngực (ợ nóng), dâng từ dạ dày lên cổ họng. Ảnh hưởng đến 30–80% phụ nữ mang thai.", cause: "Thay đổi nội tiết tố làm giãn van giữa dạ dày & thực quản." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Mild urinary incontinence", description: "Involuntary leakage of urine, especially when coughing, sneezing, or laughing.", cause: "Pressure from the growing uterus on the bladder." }, vn: { content: "Són tiểu Nhẹ", description: "Rò rỉ nước tiểu không tự chủ, đặc biệt là khi ho, hắt hơi hoặc cười.", cause: "Áp lực từ tử cung đang phát triển lên bàng quang." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Frequent urination & urinary urgency", description: "The need to urinate more often & a sudden, strong urge to urinate.", cause: "The growing uterus puts pressure on the bladder." }, vn: { content: "Tiểu thường xuyên & Tiểu gấp", description: "Nhu cầu đi tiểu thường xuyên hơn & cảm giác muốn đi tiểu đột ngột, mạnh mẽ.", cause: "Tử cung phát triển gây áp lực lên bàng quang." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [4,5,6] },
+                { en: { content: "Stretch marks (breasts, abdomen, thighs, buttocks)", description: "Common condition, occurring in 50–90% of pregnant women. They appear as red-purple or pale pink streaks or skin tears.", cause: "The skin stretching faster than its elasticity can handle." }, vn: { content: "Rạn da (Vú, Bụng, Đùi, Mông)", description: "Tình trạng phổ biến, xảy ra ở 50–90% phụ nữ mang thai. Chúng xuất hiện dưới dạng các vệt màu đỏ tím hoặc hồng nhạt hoặc các vết rách da.", cause: "Da bị kéo căng nhanh hơn độ đàn hồi cho phép." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [4,5,6] },
+                { en: { content: "Constipation/Hemorrhoids", description: "Affects 11–38% of pregnant women. May persist throughout pregnancy. Bowel movements less than 3 times/week.", cause: "Hormones slowing digestion, uterine pressure." }, vn: { content: "Táo bón / Bệnh trĩ", description: "Ảnh hưởng 11–38% phụ nữ mang thai. Có thể kéo dài suốt thai kỳ. Đi tiêu ít hơn 3 lần/tuần.", cause: "Nội tiết tố làm chậm tiêu hóa, áp lực tử cung." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [4,5,6] },
+                { en: { content: "Leg cramps", description: "Affecting approximately 30–50% of pregnant women, typically appearing from the second trimester onward & worsening at night.", cause: "Mineral deficiencies: magnesium, calcium, or sodium." }, vn: { content: "Chuột rút ở Chân", description: "Ảnh hưởng khoảng 30–50% phụ nữ mang thai, thường xuất hiện từ tam cá nguyệt thứ hai trở đi & nặng hơn vào ban đêm.", cause: "Thiếu khoáng chất: magiê, canxi hoặc natri." }, classification: "Symptom/Sign", priority: null, months: [4,5,6] },
+                { en: { content: "Heartburn & indigestion", description: "Heartburn (pyrosis): A burning sensation in the chest, rising from the stomach to the throat. Typically occurs after eating, when lying down, or at night. Indigestion (dyspepsia): A feeling of fullness, bloating, slow digestion, nausea, or early satiety. Affects 30–80% of pregnant women.", cause: "Hormonal changes & pressure from the growing uterus." }, vn: { content: "Ợ nóng & Khó tiêu", description: "Ợ nóng (pyrosis): Cảm giác nóng rát ở ngực, dâng từ dạ dày lên cổ họng. Thường xảy ra sau khi ăn, khi nằm hoặc vào ban đêm. Khó tiêu (dyspepsia): Cảm giác đầy hơi, chướng bụng, tiêu hóa chậm, buồn nôn hoặc no sớm. Ảnh hưởng đến 30–80% phụ nữ mang thai.", cause: "Thay đổi nội tiết tố & áp lực từ tử cung đang phát triển." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [4,5,6] },
+                { en: { content: "Nosebleeds & Bleeding gums", description: "Bleeding gums during pregnancy is a very common symptom, affecting about 60–75% of pregnant women.", cause: "Increased blood volume & hormonal effects on blood vessels." }, vn: { content: "Chảy máu cam & Chảy máu nướu", description: "Chảy máu nướu khi mang thai là một triệu chứng rất phổ biến, ảnh hưởng đến khoảng 60–75% phụ nữ mang thai.", cause: "Tăng thể tích máu & ảnh hưởng của nội tiết tố lên mạch máu." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [4,5,6] }
+            ],
+            "trimester3": [
+                { en: { content: "Hypertensive Disorders/Preeclampsia", description: "A serious blood pressure condition that can occur during pregnancy.", cause: "Exact cause is unknown, but it's thought to be related to problems with the placenta." }, vn: { content: "Rối loạn Tăng huyết áp / Tiền sản giật", description: "Một tình trạng huyết áp nghiêm trọng có thể xảy ra trong thai kỳ.", cause: "Nguyên nhân chính xác chưa được biết, nhưng được cho là có liên quan đến các vấn đề với nhau thai." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [7,8,9] },
+                { en: { content: "Preterm birth", description: "Childbirth occurring before 37 completed weeks of gestation, calculated from the 1st day of the last menstrual period.", cause: "Various medical & lifestyle factors." }, vn: { content: "Sinh non", description: "Sinh con trước khi đủ 37 tuần thai, tính từ ngày đầu tiên của kỳ kinh cuối cùng.", cause: "Nhiều yếu tố y tế & lối sống khác nhau." }, classification: "Definition", priority: null, months: [6,7,8,9] },
+                { en: { content: "Stillbirth", description: "A condition in which the fetus dies in the uterus after the 20th week of pregnancy (according to the CDC – USA) or after the 22nd week (according to WHO), either before or during labor. About 50% of stillbirths have no clearly identified cause.", cause: "Often unknown; can be related to placenta problems or genetics." }, vn: { content: "Thai lưu", description: "Tình trạng thai nhi chết trong tử cung sau tuần thứ 20 của thai kỳ (theo CDC Hoa Kỳ) hoặc sau tuần thứ 22 (theo WHO), trước hoặc trong khi chuyển dạ. Khoảng 50% các trường hợp thai lưu không xác định được nguyên nhân rõ ràng.", cause: "Thường không rõ nguyên nhân; có thể liên quan đến vấn đề nhau thai hoặc di truyền." }, classification: "Definition", priority: null, months: [6,7,8,9] },
+                { en: { content: "Gestational Diabetes Mellitus", description: "A condition of glucose intolerance that is first diagnosed during pregnancy.", cause: "To diagnose glucose intolerance during pregnancy." }, vn: { content: "Tiểu đường Thai kỳ", description: "Tình trạng rối loạn dung nạp glucose được chẩn đoán lần đầu trong thai kỳ.", cause: "Để chẩn đoán rối loạn dung nạp glucose trong thai kỳ." }, classification: "Medical Diagnostic & Prevent", priority: "Endocrinology", months: [7,8,9] },
+                { en: { content: "False labor (Braxton Hicks contractions)", description: "Physiological uterine contractions that are irregular & non-progressive, not leading to true labor.", cause: "The uterus 'practicing' for labor." }, vn: { content: "Chuyển dạ giả (Cơn gò Braxton Hicks)", description: "Là những cơn co tử cung sinh lý, không đều, không tiến triển, không dẫn đến chuyển dạ thật.", cause: "Tử cung 'tập luyện' cho quá trình chuyển dạ." }, classification: "Symptom/Sign", priority: null, months: [7,8,9] },
+                { en: { content: "HELLP syndrome", description: "A serious obstetric complication, often considered a severe variant of preeclampsia.", cause: "A disorder of liver & blood clotting." }, vn: { content: "Hội chứng HELLP", description: "Một biến chứng sản khoa nghiêm trọng, thường được xem là một biến thể nặng của tiền sản giật.", cause: "Rối loạn chức năng gan & đông máu." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [7,8,9] },
+                { en: { content: "Intrahepatic Cholestasis of Pregnancy (ICP)", description: "A liver disorder unique to pregnancy that can pose serious risks to the fetus if not diagnosed & managed promptly.", cause: "Bile flow from the liver is reduced." }, vn: { content: "Ứ mật trong gan Thai kỳ (ICP)", description: "Một rối loạn gan đặc hiệu của thai kỳ, có thể gây biến chứng nguy hiểm cho thai nhi nếu không được phát hiện & xử trí kịp thời.", cause: "Lưu lượng mật từ gan bị giảm." }, classification: "Symptom/Sign", priority: null, months: [7,8,9] },
+                { en: { content: "Pruritic Urticarial Papules & Plaques of Pregnancy (PUPPP)", description: "A pruritic rash resembling hives (urticaria), most commonly occurring in the third trimester of pregnancy.", cause: "Unknown, possibly related to stretching skin." }, vn: { content: "Sẩn ngứa, Mề đay Thai kỳ (PUPPP)", description: "Mẩn ngứa giống như mề đay (urticaria), thường xảy ra nhất trong tam cá nguyệt thứ ba của thai kỳ.", cause: "Không rõ, có thể liên quan đến việc da bị căng." }, classification: "Symptom/Sign", priority: null, months: [7,8,9] }
+            ],
+            "after-birth": [
+                { en: { content: "Postpartum Malnutrition", description: "Deficiencies in energy and/or micronutrients.", cause: "Increased nutritional needs for recovery & lactation." }, vn: { content: "Suy dinh dưỡng Sau sinh", description: "Thiếu hụt năng lượng và/hoặc vi chất dinh dưỡng.", cause: "Nhu cầu dinh dưỡng tăng cao để phục hồi & cho con bú." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Postpartum Overweight & Obesity", description: "Becoming increasingly common among modern women.", cause: "Weight retention after pregnancy." }, vn: { content: "Thừa cân & Béo phì Sau sinh", description: "Ngày càng trở nên phổ biến ở phụ nữ hiện đại.", cause: "Giữ lại cân nặng sau khi mang thai." }, classification: "Symptom/Sign", priority: "Endocrinology", months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Sleep Disorder", description: "Affect 60–80% of women within the first 6 weeks after childbirth.", cause: "Newborn care, hormonal shifts, discomfort." }, vn: { content: "Rối loạn Giấc ngủ", description: "Ảnh hưởng 60–80% phụ nữ trong 6 tuần đầu sau sinh.", cause: "Chăm sóc trẻ sơ sinh, thay đổi nội tiết tố, khó chịu." }, classification: "Symptom/Sign", priority: "Mental health & sleepiness", months: [1,2] },
+                { en: { content: "Postpartum depression", description: "A mental health disorder occurring between 4 weeks to 1 year after childbirth, more severe than 'baby blues'.", cause: "Hormonal changes, sleep deprivation, stress." }, vn: { content: "Trầm cảm Sau sinh", description: "Rối loạn sức khỏe tâm thần xảy ra từ 4 tuần đến 1 năm sau sinh, nghiêm trọng hơn 'baby blues'.", cause: "Thay đổi nội tiết tố, thiếu ngủ, căng thẳng." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Postpartum Diabetes", description: "A common but important health issue in women with prior Gestational Diabetes (GDM).", cause: "Underlying insulin resistance." }, vn: { content: "Tiểu đường Sau sinh", description: "Một vấn đề sức khỏe phổ biến nhưng quan trọng ở phụ nữ có tiền sử Tiểu đường thai kỳ (GDM).", cause: "Đề kháng insulin tiềm ẩn." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Hormonal Imbalance & Irregular Menstruation", description: "Estrogen drops sharply leading to vaginal dryness, mood changes, menstrual irregularities. Progesterone drops suddenly leading to imbalance with estrogen.", cause: "Post-delivery hormonal shifts." }, vn: { content: "Mất cân bằng Nội tiết tố & Kinh nguyệt không đều", description: "Estrogen sụt giảm mạnh gây khô âm đạo, thay đổi tâm trạng, kinh nguyệt không đều. Progesterone giảm đột ngột gây mất cân bằng với estrogen.", cause: "Thay đổi nội tiết tố sau sinh." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Postpartum Contraception", description: "Helping ensure proper birth spacing (≥ 18–24 months) reduces the risk of preterm birth, low birth weight, & preeclampsia.", cause: "To reduce risks for future pregnancies." }, vn: { content: "Biện pháp Tránh thai Sau sinh", description: "Giúp đảm bảo khoảng cách sinh hợp lý (≥ 18–24 tháng) làm giảm nguy cơ sinh non, nhẹ cân & tiền sản giật.", cause: "Để giảm nguy cơ cho các lần mang thai sau." }, classification: "Medical Diagnostic & Prevent", priority: null, months: [1,2,3,4,5,6,7,8,9,10,11,12] },
+                { en: { content: "Delayed or Insufficient Lactation", description: "Challenges with milk coming in or producing enough milk for the baby's needs.", cause: "Hormonal issues, stress, improper latch." }, vn: { content: "Chậm hoặc Không đủ sữa", description: "Khó khăn trong việc sữa về hoặc sản xuất không đủ sữa cho nhu cầu của bé.", cause: "Vấn đề nội tiết, căng thẳng, ngậm bắt vú sai." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Not knowing how to breastfeed correctly", description: "Learning the proper techniques for latching & positioning.", cause: "Essential for successful breastfeeding & preventing nipple pain." }, vn: { content: "Không biết cách Cho con bú Đúng cách", description: "Học các kỹ thuật đúng để bé ngậm bắt vú & tư thế cho bú.", cause: "Cần thiết để cho con bú thành công & ngăn ngừa đau núm vú." }, classification: "Require education", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Not knowing how to prepare IF", description: "Learning how to prepare infant formula correctly if needed.", cause: "To ensure infant safety & proper nutrition." }, vn: { content: "Không biết cách Pha sữa Công thức", description: "Học cách pha sữa công thức đúng cách nếu cần.", cause: "Để đảm bảo an toàn & dinh dưỡng cho trẻ." }, classification: "Require education", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Back Pain & Wrist Pain (While Breastfeeding)", description: "Common aches & pains experienced while holding the baby for feeding.", cause: "Poor posture & the repetitive strain of holding the baby." }, vn: { content: "Đau lưng & Cổ tay (Khi cho con bú)", description: "Các cơn đau nhức phổ biến khi bế em bé cho bú.", cause: "Tư thế sai & sự căng thẳng lặp đi lặp lại khi bế em bé." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Postpartum Functional Urinary Retention", description: "Difficulty urinating or completely emptying the bladder after childbirth.", cause: "Swelling, inflammation, or nerve effects from delivery." }, vn: { content: "Bí tiểu Chức năng Sau sinh", description: "Khó đi tiểu hoặc không thể làm trống hoàn toàn bàng quang sau khi sinh.", cause: "Sưng, viêm hoặc ảnh hưởng thần kinh từ cuộc sinh." }, classification: "Symptom/Sign", priority: "Mental health & sleepiness", months: [1,2,3,4,5,6] },
+                { en: { content: "Postpartum Breast abscess", description: "A painful, swollen lump in the breast that is a collection of pus.", cause: "A complication of untreated or severe mastitis (breast infection)." }, vn: { content: "Áp-xe Vú Sau sinh", description: "Một khối sưng đau trong vú là một khối mủ.", cause: "Biến chứng của viêm vú nặng hoặc không được điều trị." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Cesarean Section Wound Pain & Infection", description: "Pain, redness, swelling, or discharge from the C-section incision site.", cause: "Normal surgical recovery or a potential bacterial infection." }, vn: { content: "Đau & Nhiễm trùng Vết mổ Lấy thai", description: "Đau, đỏ, sưng hoặc chảy dịch từ vị trí vết mổ.", cause: "Phục hồi phẫu thuật bình thường hoặc nhiễm trùng do vi khuẩn tiềm ẩn." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Pain & Infection of the Episiotomy Wound", description: "Pain, redness, swelling, or discharge from the site of an episiotomy.", cause: "Normal surgical recovery or a potential bacterial infection." }, vn: { content: "Đau & Nhiễm trùng Vết cắt Tầng sinh môn", description: "Đau, đỏ, sưng hoặc chảy dịch từ vị trí vết cắt.", cause: "Phục hồi phẫu thuật bình thường hoặc nhiễm trùng do vi khuẩn tiềm ẩn." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Fatigue, feeling of lost energy", description: "A feeling of exhaustion & lack of energy is very common.", cause: "Recovery from birth, sleep deprivation, & the demands of caring for a newborn." }, vn: { content: "Mệt mỏi, Cảm giác Mất năng lượng", description: "Cảm giác kiệt sức & thiếu năng lượng rất phổ biến.", cause: "Phục hồi sau sinh, thiếu ngủ & nhu cầu chăm sóc trẻ sơ sinh." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Postpartum Hair loss", description: "Begins around 2–4 months after delivery, due to hormonal shifts & changes in the hair growth cycle. Medically, this condition is known as telogen effluvium.", cause: "Hormonal shifts (telogen effluvium)." }, vn: { content: "Rụng tóc Sau sinh", description: "Bắt đầu khoảng 2–4 tháng sau khi sinh, do thay đổi nội tiết tố & chu kỳ phát triển của tóc. Về mặt y học, tình trạng này được gọi là telogen effluvium.", cause: "Thay đổi nội tiết tố (telogen effluvium)." }, classification: "Symptom/Sign", priority: null, months: [1,2,3,4,5,6] },
+                { en: { content: "Lochia", description: "Vaginal discharge after giving birth, containing blood, mucus, & uterine tissue. It lasts for several weeks.", cause: "The uterine lining shedding & healing after delivery." }, vn: { content: "Sản dịch", description: "Dịch tiết âm đạo sau sinh, chứa máu, chất nhầy & mô tử cung. Tình trạng này kéo dài vài tuần.", cause: "Niêm mạc tử cung bong ra & lành lại sau khi sinh." }, classification: "Symptom/Sign", priority: null, months: [1,2] }
+            ]
+        };
+
+        const uiText = {
+            en: {
+                mainTitle: "Mom's Blueprint",
+                mainSubtitle: "A scientific guide to a healthy pregnancy and beyond.",
+                nameDescription: "'Mom's Blueprint' signifies a clear, evidence-based plan for your unique journey into motherhood.",
+                allStages: "All Stages",
+                prePregnancy: "Pre-Pregnancy",
+                pregnancy: "Pregnancy",
+                afterBirth: "After Birth",
+                trimester1: "1st Trimester",
+                trimester2: "2nd Trimester",
+                trimester3: "3rd Trimester",
+                legendSymptomSign: "Symptom / Sign",
+                legendMedicalDiagnosticPrevent: "Medical Diagnostic & Prevent",
+                legendDefinition: "Definition",
+                legendRequireeducation: "Education",
+                legendEndocrinology: "Endocrinology",
+                legendMentalhealthsleepiness: "Mental health & sleepiness",
+                modalDescription: "Description",
+                modalCauses: "Causes",
+                modalSolution: "Solution",
+                stageDesc_all_stages: "An overview of the entire journey, from preparation to postpartum.",
+                stageDesc_pre_pregnancy: "Preparing your body & mind for a healthy pregnancy is a crucial first step.",
+                stageDesc_pregnancy: "A transformative period of growth & change, divided into three distinct trimesters.",
+                stageDesc_after_birth: "The postpartum period focuses on recovery, bonding, & adapting to new motherhood.",
+                labelTooltip: "<b>PP / TTK:</b> Pre-Pregnancy<br><b>P / TK:</b> Pregnancy<br><b>AB / SS:</b> After Birth<br>The numbers indicate the months."
+            },
+            vn: {
+                mainTitle: "Cẩm Nang của Mẹ",
+                mainSubtitle: "Cẩm nang khoa học cho một thai kỳ khỏe mạnh và hơn thế nữa.",
+                nameDescription: "'Cẩm Nang của Mẹ' là một kế hoạch chi tiết, dựa trên khoa học cho hành trình làm mẹ của bạn.",
+                allStages: "Tất Cả Giai Đoạn",
+                prePregnancy: "Trước Thai Kỳ",
+                pregnancy: "Trong Thai Kỳ",
+                afterBirth: "Sau Khi Sinh",
+                trimester1: "3 Tháng Đầu",
+                trimester2: "3 Tháng Giữa",
+                trimester3: "3 Tháng Cuối",
+                legendSymptomSign: "Triệu chứng / Dấu hiệu",
+                legendMedicalDiagnosticPrevent: "Thăm khám Y khoa & Phòng ngừa",
+                legendDefinition: "Định nghĩa",
+                legendRequireeducation: "Kiến thức",
+                legendEndocrinology: "Nội tiết",
+                legendMentalhealthsleepiness: "Sức khỏe Tinh thần & Giấc ngủ",
+                modalDescription: "Mô tả",
+                modalCauses: "Nguyên nhân",
+                modalSolution: "Giải pháp",
+                stageDesc_all_stages: "Tổng quan về toàn bộ hành trình, từ chuẩn bị đến sau sinh.",
+                stageDesc_pre_pregnancy: "Chuẩn bị thể chất & tinh thần cho một thai kỳ khỏe mạnh là bước đầu tiên quan trọng.",
+                stageDesc_pregnancy: "Một giai đoạn biến đổi của sự tăng trưởng & thay đổi, được chia thành ba tam cá nguyệt riêng biệt.",
+                stageDesc_after_birth: "Giai đoạn sau sinh tập trung vào việc phục hồi, gắn kết & thích nghi với vai trò làm mẹ mới.",
+                labelTooltip: "<b>TTK / PP:</b> Trước Thai Kỳ<br><b>TK / P:</b> Trong Thai Kỳ<br><b>SS / AB:</b> Sau Khi Sinh<br>Các con số chỉ tháng."
+            }
+        };
+
+        // --- DOM ELEMENTS ---
+        const mainTabs = document.querySelectorAll('.main-tab');
+        const subNav = document.getElementById('pregnancy-sub-nav');
+        const subTabs = document.querySelectorAll('.sub-tab');
+        const contentArea = document.getElementById('content-area');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContainer = document.getElementById('modal-container');
+        const modalContent = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
+        const modalTimeline = document.getElementById('modal-timeline');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+        const langTabs = document.querySelectorAll('.lang-tab');
+        const themeSwitch = document.getElementById('theme-switch');
+        const monthNav = document.getElementById('month-nav');
+        const stageDescriptionContainer = document.getElementById('stage-description-container');
+        const legendContainer = document.getElementById('legend-container');
+        const nameDescription = document.getElementById('name-description');
+
+        // --- APP STATE ---
+        let currentStage = 'all-stages';
+        let currentSubStage = null;
+        let currentLang = 'en';
+        let currentMonthFilter = null;
+        let consolidatedData = [];
+
+        // --- DATA PROCESSING FUNCTIONS ---
+        function consolidateJourneyData(originalData) {
+            const consolidated = {};
+            const stageMap = {
+                'pre-pregnancy': 'PP', 'trimester1': 'P', 'trimester2': 'P',
+                'trimester3': 'P', 'after-birth': 'AB'
+            };
+            const combinedTrimesters = [...originalData.trimester1, ...originalData.trimester2, ...originalData.trimester3];
+            const processedData = {
+                'pre-pregnancy': originalData['pre-pregnancy'],
+                'pregnancy': combinedTrimesters,
+                'after-birth': originalData['after-birth']
+            };
+
+            for (const key in processedData) {
+                const stageAbbr = key === 'pre-pregnancy' ? 'PP' : (key === 'pregnancy' ? 'P' : 'AB');
+                processedData[key].forEach(item => {
+                    const contentKey = item.en.content;
+                    if (!consolidated[contentKey]) {
+                        consolidated[contentKey] = { ...JSON.parse(JSON.stringify(item)), timeline: {} };
+                    }
+                    if (!consolidated[contentKey].timeline[stageAbbr]) {
+                        consolidated[contentKey].timeline[stageAbbr] = [];
+                    }
+                    consolidated[contentKey].timeline[stageAbbr].push(...item.months);
+                });
+            }
+
+            for (const contentKey in consolidated) {
+                const item = consolidated[contentKey];
+                for (const stageAbbr in item.timeline) {
+                    item.timeline[stageAbbr] = [...new Set(item.timeline[stageAbbr])].sort((a, b) => a - b);
+                }
+            }
+            return Object.values(consolidated);
+        }
+
+        function generateTimelineLabel(timeline, lang) {
+            const translations = {
+                en: { PP: "PP", P: "P", AB: "AB" },
+                vn: { PP: "TTK", P: "TK", AB: "SS" }
+            };
+            const t = translations[lang];
+            const parts = [];
+            const stageOrder = ['PP', 'P', 'AB'];
+
+            stageOrder.forEach(stageAbbr => {
+                if (timeline[stageAbbr]) {
+                    const months = timeline[stageAbbr];
+                    if (!months || months.length === 0) return;
+                    
+                    let ranges = [];
+                    let start = months[0];
+                    for (let i = 1; i <= months.length; i++) {
+                        if (i === months.length || months[i] !== months[i - 1] + 1) {
+                            let end = months[i - 1];
+                            ranges.push(start === end ? `${start}` : `${start}-${end}`);
+                            if (i < months.length) start = months[i];
+                        }
+                    }
+                    parts.push(`<b>${t[stageAbbr]}:</b> ${ranges.join(', ')}`);
+                }
+            });
+            return parts.join('<br>');
+        }
+
+        // --- UI RENDERING FUNCTIONS ---
+        function renderContent() {
+            contentArea.innerHTML = '';
+            let dataToDisplay = consolidatedData;
+
+            if (currentMonthFilter) {
+                if (currentMonthFilter === 'pre') {
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['PP']);
+                } else if (currentMonthFilter === 'ab1-6') {
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['AB'] && item.timeline['AB'].some(m => m >= 1 && m <= 6));
+                } else if (currentMonthFilter === 'ab7-12') {
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['AB'] && item.timeline['AB'].some(m => m >= 7 && m <= 12));
+                } else {
+                    const monthNum = parseInt(currentMonthFilter);
+                    if (!isNaN(monthNum)) {
+                       dataToDisplay = consolidatedData.filter(item => item.timeline['P'] && item.timeline['P'].includes(monthNum));
+                    }
+                }
+            } else {
+                if (currentStage === 'pre-pregnancy') {
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['PP']);
+                } else if (currentStage === 'pregnancy') {
+                    const monthsInTrimester = {
+                        'trimester1': [1, 2, 3],
+                        'trimester2': [4, 5, 6],
+                        'trimester3': [7, 8, 9]
+                    }[currentSubStage] || [];
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['P'] && item.timeline['P'].some(m => monthsInTrimester.includes(m)));
+                } else if (currentStage === 'after-birth') {
+                    dataToDisplay = consolidatedData.filter(item => item.timeline['AB']);
+                }
+            }
+
+            const groupedData = dataToDisplay.reduce((acc, item) => {
+                (acc[item.classification] = acc[item.classification] || []).push(item);
+                return acc;
+            }, {});
+
+            const classificationOrder = ["Symptom/Sign", "Medical Diagnostic & Prevent", "Definition", "Require education"];
+            classificationOrder.forEach(classification => {
+                if (groupedData[classification] && groupedData[classification].length > 0) {
+                    const classificationKey = `legend${classification.replace(/[\s/&]/g, '')}`;
+                    contentArea.innerHTML += `<h3 class="classification-header">${uiText[currentLang][classificationKey]}</h3>`;
+                    
+                    groupedData[classification].forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'keyword-card glass-card rounded-xl';
+                        card.dataset.contentKey = item.en.content;
+                        
+                        const priorityKey = item.priority ? `legend${item.priority.replace(/[\s&]/g, '')}` : '';
+                        const priorityTagHTML = item.priority 
+                            ? `<div class="priority-tag priority-tag-${item.priority.replace(/\s/g, '-')}">${uiText[currentLang][priorityKey]}</div>` 
+                            : '<div></div>';
+
+                        const timelineLabelHTML = `
+                            <div class="timeline-label-container">
+                                <div class="timeline-label">${generateTimelineLabel(item.timeline, currentLang)}</div>
+                                <span class="timeline-tooltip-text">${uiText[currentLang].labelTooltip}</span>
+                            </div>`;
+                        
+                        card.innerHTML = `
+                            <div class="card-content">${item[currentLang].content}</div>
+                            <div class="card-footer">
+                                ${priorityTagHTML}
+                                ${timelineLabelHTML}
+                            </div>
+                        `;
+                        contentArea.appendChild(card);
+                    });
+                }
+            });
+        }
+
+        function renderMonthBar() {
+            monthNav.innerHTML = `
+                <button class="month-tab flex-shrink-0 px-4 h-10 rounded-lg text-sm font-semibold" data-month="pre">Pre</button>
+                ${[...Array(9)].map((_, i) => `<button class="month-tab flex-shrink-0 w-10 h-10 rounded-lg text-sm font-semibold" data-month="${i + 1}">${i + 1}</button>`).join('')}
+                <button class="month-tab flex-shrink-0 px-3 h-10 rounded-lg text-sm font-semibold" data-month="ab1-6">AB: 1-6</button>
+                <button class="month-tab flex-shrink-0 px-3 h-10 rounded-lg text-sm font-semibold" data-month="ab7-12">AB: 7-12</button>
+            `;
+        }
+
+        function updateUIText() {
+            const t = uiText[currentLang];
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+            nameDescription.textContent = t.nameDescription;
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                el.textContent = t[el.dataset.langKey];
+            });
+            stageDescriptionContainer.textContent = t[`stageDesc_${currentStage.replace('-', '_')}`] || '';
+            legendContainer.innerHTML = `
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background: var(--gold-gradient);"></div>${t.legendEndocrinology}</div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background-color: var(--gold-end);"></div>${t.legendMentalhealthsleepiness}</div>
+            `;
+        }
+        
+        function updateDisplay() {
+            updateUIText();
+            mainTabs.forEach(t => t.classList.toggle('active', t.dataset.tab === currentStage));
+            subTabs.forEach(t => t.classList.toggle('active', t.dataset.subtab === currentSubStage));
+            document.querySelectorAll('#month-nav .month-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.month === currentMonthFilter);
+            });
+            subNav.style.display = currentStage === 'pregnancy' ? 'flex' : 'none';
+            renderContent();
+        }
+
+        function openModal(contentKey) {
+            const item = consolidatedData.find(d => d.en.content === contentKey);
+            if (!item) return;
+            modalTitle.textContent = item[currentLang].content;
+            modalTimeline.innerHTML = generateTimelineLabel(item.timeline, currentLang);
+            let bodyHTML = '';
+            const t = uiText[currentLang];
+            
+            if (item.priority) {
+                const priorityKey = `legend${item.priority.replace(/[\s&]/g, '')}`;
+                const priorityText = t[priorityKey];
+                bodyHTML += `<div class="mb-4">
+                    <span class="priority-tag priority-tag-${item.priority.replace(/\s/g, '-')}">${priorityText}</span>
+                </div>`;
+            }
+
+            if (item[currentLang].description) {
+                bodyHTML += `<div class="modal-section"><h4>${t.modalDescription}</h4>${formatToBullets(item[currentLang].description)}</div>`;
+            }
+            if (item[currentLang].cause) {
+                bodyHTML += `<div class="modal-section"><h4>${t.modalCauses}</h4>${formatToBullets(item[currentLang].cause)}</div>`;
+            }
+            modalBody.innerHTML = bodyHTML;
+            modalOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            modalContainer.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.add('opacity-0', 'pointer-events-none');
+            modalContainer.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95', 'opacity-0');
+        }
+
+        function formatToBullets(text) {
+            if (!text) return `<p class="text-gray-400">No information available.</p>`;
+            
+            const listPrefixRegex = /^(Includes: |Check for: |Recommended vaccines: |Tests for: )/i;
+            if (listPrefixRegex.test(text)) {
+                let listItems = text.replace(listPrefixRegex, '');
+                const points = listItems.split(/, |; /).map(p => p.trim()).filter(p => p.length > 0);
+                return `<ul class="list-disc pl-5 space-y-1">${points.map(p => `<li>${p.charAt(0).toUpperCase() + p.slice(1)}</li>`).join('')}</ul>`;
+            }
+
+            if (/[\n;]/.test(text)) {
+                const points = text.split(/[\n;]/).map(p => p.trim()).filter(p => p.length > 0);
+                return `<ul class="list-disc pl-5 space-y-1">${points.map(p => `<li>${p.charAt(0).toUpperCase() + p.slice(1)}</li>`).join('')}</ul>`;
+            }
+
+            return `<p>${text}</p>`;
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            langTabs.forEach(lt => lt.classList.toggle('active', lt.dataset.lang === lang));
+            localStorage.setItem('language', lang);
+            updateDisplay();
+        }
+
+        function setTheme(theme) {
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+            document.documentElement.classList.toggle('light', theme !== 'dark');
+            themeSwitch.checked = theme === 'dark';
+            localStorage.setItem('theme', theme);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            consolidatedData = consolidateJourneyData(fullJourneyData);
+            renderMonthBar();
+            
+            mainTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    currentStage = tab.dataset.tab;
+                    currentMonthFilter = null;
+                    if (currentStage === 'pregnancy') {
+                        currentSubStage = 'trimester1';
+                    } else {
+                        currentSubStage = null;
+                    }
+                    updateDisplay();
+                });
+            });
+
+            subTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    currentStage = 'pregnancy';
+                    currentSubStage = tab.dataset.subtab;
+                    currentMonthFilter = null;
+                    updateDisplay();
+                });
+            });
+            
+            monthNav.addEventListener('click', (e) => {
+                const monthButton = e.target.closest('.month-tab');
+                if (monthButton) {
+                    const month = monthButton.dataset.month;
+                    currentMonthFilter = month;
+                    
+                    if (month === 'pre') {
+                        currentStage = 'pre-pregnancy';
+                        currentSubStage = null;
+                    } else if (month === 'ab1-6' || month === 'ab7-12') {
+                        currentStage = 'after-birth';
+                        currentSubStage = null;
+                    } else {
+                        const monthNum = parseInt(month);
+                        currentStage = 'pregnancy';
+                        if (monthNum <= 3) currentSubStage = 'trimester1';
+                        else if (monthNum <= 6) currentSubStage = 'trimester2';
+                        else currentSubStage = 'trimester3';
+                    }
+                    updateDisplay();
+                }
+            });
+
+            contentArea.addEventListener('click', (e) => {
+                const card = e.target.closest('.keyword-card');
+                if (card) openModal(card.dataset.contentKey);
+            });
+
+            langTabs.forEach(tab => tab.addEventListener('click', () => setLanguage(tab.dataset.lang)));
+            themeSwitch.addEventListener('change', (e) => setTheme(e.target.checked ? 'dark' : 'light'));
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedLang = localStorage.getItem('language') || 'en';
+            setTheme(savedTheme);
+            setLanguage(savedLang); 
+            
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

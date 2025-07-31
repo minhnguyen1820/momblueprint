@@ -14,30 +14,30 @@
             /* Color Palette */
             --blue-main: #3b82f6;
             --deep-blue: #1e293b;
-            --gold-start: #fde047;
-            --gold-end: #f59e0b;
-            --gold-text: #ca8a04;
+            --gold-start: #facc15; 
+            --gold-end: #d97706;   
             --gold-gradient: linear-gradient(135deg, var(--gold-start), var(--gold-end));
+            --blue-gradient: linear-gradient(135deg, var(--blue-main), var(--deep-blue));
             
-            /* Light Mode */
+            /* Light Mode Variables */
             --bg-primary-light: #f1f5f9;
             --text-primary-light: #0f172a;
             --border-light: #e2e8f0;
             --card-bg-light: #ffffff;
-            --tag-endo-bg-light: var(--gold-end);
-            --tag-endo-text-light: white;
-            --tag-mental-bg-light: var(--gold-end);
-            --tag-mental-text-light: var(--deep-blue);
+            --highlight-gradient-light: var(--blue-gradient);
+            --highlight-text-light: white;
+            --header-gradient-light: var(--blue-gradient);
+            --active-tab-text-light: white;
 
-            /* Dark Mode */
+            /* Dark Mode Variables */
             --bg-primary-dark: #0f172a;
             --text-primary-dark: #f1f5f9;
             --border-dark: rgba(148, 163, 184, 0.3);
             --card-bg-dark: rgba(30, 41, 59, 0.7);
-            --tag-endo-bg-dark: var(--gold-gradient);
-            --tag-endo-text-dark: var(--deep-blue);
-            --tag-mental-bg-dark: var(--gold-end);
-            --tag-mental-text-dark: white;
+            --highlight-gradient-dark: var(--gold-gradient);
+            --highlight-text-dark: var(--deep-blue);
+            --header-gradient-dark: var(--gold-gradient);
+            --active-tab-text-dark: var(--deep-blue);
         }
 
         html {
@@ -74,9 +74,12 @@
         
         .main-tab, .sub-tab, .lang-tab, .month-tab { transition: all 0.2s ease-in-out; }
         .main-tab.active { background-color: var(--blue-main); color: white; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3); }
-        .sub-tab.active { background-image: var(--gold-gradient); color: var(--deep-blue); font-weight: 700; }
-        .lang-tab.active { background-image: var(--gold-gradient); color: var(--deep-blue); }
         .month-tab.active { background-color: var(--blue-main); color: white; }
+
+        .light .sub-tab.active { background-image: var(--highlight-gradient-light); color: var(--active-tab-text-light); font-weight: 700; }
+        .dark .sub-tab.active { background-image: var(--highlight-gradient-dark); color: var(--active-tab-text-dark); font-weight: 700; }
+        .light .lang-tab.active { background-image: var(--highlight-gradient-light); color: var(--active-tab-text-light); }
+        .dark .lang-tab.active { background-image: var(--highlight-gradient-dark); color: var(--active-tab-text-dark); }
 
         #content-area { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
 
@@ -98,37 +101,51 @@
         .card-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
         
         .priority-tag { padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
-        
-        .light .priority-tag-Endocrinology { 
-            background: var(--tag-endo-bg-light); 
-            color: var(--tag-endo-text-light); 
-        }
-        .dark .priority-tag-Endocrinology { 
-            background: var(--tag-endo-bg-dark); 
-            color: var(--tag-endo-text-dark); 
-        }
-
-        .light .priority-tag-Mental-health-&-sleepiness { 
-            background-color: var(--tag-mental-bg-light); 
-            color: var(--tag-mental-text-light); 
-        }
-        .dark .priority-tag-Mental-health-&-sleepiness { 
-            background-color: var(--tag-mental-bg-dark); 
-            color: var(--tag-mental-text-dark); 
-        }
+        .light .priority-tag { background: var(--highlight-gradient-light); color: var(--highlight-text-light); }
+        .dark .priority-tag { background: var(--highlight-gradient-dark); color: var(--highlight-text-dark); }
 
         .classification-header {
-            font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; grid-column: 1 / -1;
+            font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem; grid-column: 1 / -1; position: relative;
         }
-        .light .classification-header { color: var(--blue-main); border-bottom: 2px solid var(--blue-main); }
-        .dark .classification-header { color: var(--gold-text); border-bottom: 2px solid var(--gold-text); }
+        .classification-header::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+        }
+        .light .classification-header {
+            color: var(--deep-blue);
+        }
+        .light .classification-header::after {
+            background: var(--header-gradient-light);
+        }
+        .dark .classification-header {
+            background: var(--header-gradient-dark);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .dark .classification-header::after {
+            background: var(--header-gradient-dark);
+        }
 
         #modal-overlay { transition: opacity 0.3s; }
         #modal-content { transition: transform 0.3s, opacity 0.3s; }
         
-        .modal-section h4 { font-weight: 700; padding-bottom: 0.5rem; margin-bottom: 0.75rem; }
-        .light .modal-section h4 { color: var(--blue-main); border-bottom: 1px solid var(--border-light); }
-        .dark .modal-section h4 { color: var(--gold-text); border-bottom: 1px solid var(--border-dark); }
+        .modal-section h4 {
+            font-weight: 700; padding-bottom: 0.5rem; margin-bottom: 0.75rem;
+            border-bottom: 2px solid;
+            border-image-slice: 1;
+        }
+        .light .modal-section h4 {
+            color: var(--deep-blue);
+            border-image-source: var(--header-gradient-light);
+        }
+        .dark .modal-section h4 {
+            background: var(--header-gradient-dark);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-image-source: var(--header-gradient-dark);
+        }
         
         .timeline-label-container { position: relative; display: inline-block; }
         .timeline-label { font-size: 0.7rem; opacity: 0.7; text-align: right; line-height: 1.2; }
@@ -143,6 +160,7 @@
             border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;
         }
         .timeline-label-container:hover .timeline-tooltip-text { visibility: visible; opacity: 1; }
+        
     </style>
 </head>
 <body class="antialiased">
@@ -175,6 +193,7 @@
         
         <footer class="mt-12 pt-6 border-t text-xs">
             <div id="name-description" class="text-center text-gray-400 mb-6 max-w-lg mx-auto"></div>
+            <p class="text-center text-gray-500 text-xs mb-6">Co-created by Le Minh Nguyen & Gemini</p>
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div id="legend-container" class="flex flex-wrap justify-center sm:justify-start items-center gap-x-4 gap-y-2"></div>
                 <div class="flex items-center gap-4">
@@ -485,7 +504,7 @@
                         
                         const priorityKey = item.priority ? `legend${item.priority.replace(/[\s&]/g, '')}` : '';
                         const priorityTagHTML = item.priority 
-                            ? `<div class="priority-tag priority-tag-${item.priority.replace(/\s/g, '-')}">${uiText[currentLang][priorityKey]}</div>` 
+                            ? `<div class="priority-tag">${uiText[currentLang][priorityKey]}</div>` 
                             : '<div></div>';
 
                         const timelineLabelHTML = `
@@ -525,10 +544,7 @@
                 el.textContent = t[el.dataset.langKey];
             });
             stageDescriptionContainer.textContent = t[`stageDesc_${currentStage.replace('-', '_')}`] || '';
-            legendContainer.innerHTML = `
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background: var(--gold-gradient);"></div>${t.legendEndocrinology}</div>
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full" style="background-color: var(--gold-end);"></div>${t.legendMentalhealthsleepiness}</div>
-            `;
+            legendContainer.innerHTML = ''; // Remove legend
         }
         
         function updateDisplay() {
@@ -554,7 +570,7 @@
                 const priorityKey = `legend${item.priority.replace(/[\s&]/g, '')}`;
                 const priorityText = t[priorityKey];
                 bodyHTML += `<div class="mb-4">
-                    <span class="priority-tag priority-tag-${item.priority.replace(/\s/g, '-')}">${priorityText}</span>
+                    <span class="priority-tag">${priorityText}</span>
                 </div>`;
             }
 
